@@ -1,0 +1,4 @@
+minio:
+  endpoint: ${cj.geochat.minio.endpoint:http://geochat-ecs.local:19000}
+  accessKey: ${cj.geochat.minio.accessKey:minioadmin}
+  secretKey: ${cj.geochat.minio.secretKey:minioadmin}

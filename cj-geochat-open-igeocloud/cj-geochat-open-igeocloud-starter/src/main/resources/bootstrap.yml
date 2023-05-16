@@ -1,0 +1,50 @@
+server:
+  port: 8040
+  servlet:
+    context-path: /
+spring:
+  profiles:
+    active: ${cj.geochat.spring.profiles.active:dev}
+  mvc:
+    pathmatch:
+    #swagger需要ant_path_matcher，否则api出不来
+    matching-strategy: ANT_PATH_MATCHER
+  application:
+    #调用者feign只认spring.application.name，不认eureka.instance.appname配置应用名
+    #所以不论服务提供者还是feign消费者，spring.application.name和eureka.instance.appname都配置就最好了
+    #feign调用方大小写不区分，而注册中心永远显示为大写
+    name: cj-geochat-open-igeocloud
+  cloud:
+    gateway:
+      routes:
+        - id: cj-geochat-middle-igeocloud
+          uri: lb://cj-geochat-middle-igeocloud
+          predicates:
+            - Path=/cj-geochat-middle-igeocloud/api/v1/igeocloud/**
+#            - Weight=group1, 5
+          filters:
+            # StripPrefix：去除原始请求路径中的前1级路径，即去掉微服务注册名：/cj-geochat-middle-igeocloud
+            - StripPrefix=1
+        - id: cj-geochat-app-igeocloud
+          uri: lb://cj-geochat-app-igeocloud
+          predicates:
+            - Path=/cj-geochat-app-igeocloud/**  #多个路径用逗号分隔
+#            - Weight=group1, 5
+          filters:
+            - SwaggerHeaderFilter
+            # StripPrefix：去除原始请求路径中的前1级路径，即去掉微服务注册名：/cj-geochat-app-igeocloud
+            - StripPrefix=1
+      discovery:
+        locator:
+          #服务名小写，服务名指在eureka中的application名，默认需要大写访问
+          lower-case-service-id: true
+          #是否开启自动在注册中心发现并路由服务
+          enabled: false
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.springframework.security.oauth2: INFO
+#    org.springframework.boot.autoconfigure: DEBUG

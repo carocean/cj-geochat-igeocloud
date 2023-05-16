@@ -1,0 +1,32 @@
+spring:
+  swagger:
+    #告知系统什么是API版本地址，默认是：^/api/v(\\d+)
+    apiVersionPattern:
+    #    defaultGroupName: 默认能力（所有）
+    enabled: true
+    #所有api的最大版本，用于生成组。
+    #在knife4j上展示的分组
+    maxVersion: 4
+    basePackage:
+    apiInfo:
+      title: 开放云盘
+      description: 开放/云盘
+      contact: cj 18023457655
+      url:
+      email: zhaoxiangbin_2005@126.com
+      version: 1.0.0
+    tokenParameter:
+      name: swagger_token
+      tokenIn: header
+      required: false
+      desc: 令牌
+#    parameters:
+#      - name: testParameter
+#        tokenIn: header
+#        required: true
+#        desc: 测试参数
+    responseMsg:
+      - code: 200
+        message: OK
+      - code: 500
+        message: 内部错误

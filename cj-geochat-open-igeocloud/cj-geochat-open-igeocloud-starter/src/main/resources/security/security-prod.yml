@@ -1,0 +1,25 @@
+spring:
+  security:
+    #认证服务中心（不是认证服务中心地址）
+    auth_server: ${cj.geochat.security_auth_server_host:http://localhost:9000}
+    whitelist:
+      - /cj-geochat-middle-igeocloud/**
+      - /*/wagger-ui.html**
+      - /*/doc.html**
+    staticlist:
+      - /assets/**
+      - /css/**
+      - /images/**
+      - /js/**
+      - /img/**
+      #以下是透出swagger，即doc.html
+      - /*/webjars/**
+      - /*/swagger-resources**
+      - /*/*/api-docs**
+      - /*/*.css
+      - /*/*.json
+      - /*/*.js
+      - /*/*.ico
+      - /*/*.jpg
+      - /*/*.png
+      - /favicon.ico
