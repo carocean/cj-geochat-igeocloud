@@ -58,6 +58,7 @@ public class MyDiskRestfull extends AbstractIGeocloudRestfull implements IMyDisk
         String diskName = getDiskName();
         checkDisk(netDiskService, String.format("igeocloud://%s", diskName));
     }
+
     @GetMapping("/deleteDisk")
     @ApiOperation("删除磁盘，需igeocloud管理员权限")
     @ApiResult
@@ -106,7 +107,7 @@ public class MyDiskRestfull extends AbstractIGeocloudRestfull implements IMyDisk
             @ApiResponse(responseCode = "1002", description = "null_parameter"),
     })
     public void mkdir(@RequestParam String relativeUrl) {
-        String fullPath = String.format("igeocloud://%s", getDiskName(), relativeUrl);
+        String fullPath = String.format("igeocloud://%s%s", getDiskName(), relativeUrl);
         netDiskService.mkdir(fullPath);
     }
 
@@ -120,7 +121,7 @@ public class MyDiskRestfull extends AbstractIGeocloudRestfull implements IMyDisk
             @ApiResponse(responseCode = "1002", description = "null_parameter"),
     })
     public List<String> listChildren(@RequestParam String relativeUrl) {
-        String fullPath = String.format("igeocloud://%s", getDiskName(), relativeUrl);
+        String fullPath = String.format("igeocloud://%s%s", getDiskName(), relativeUrl);
         return netDiskService.listChildren(fullPath, false);
     }
 
@@ -133,7 +134,7 @@ public class MyDiskRestfull extends AbstractIGeocloudRestfull implements IMyDisk
             @ApiResponse(responseCode = "1002", description = "null_parameter"),
     })
     public List<String> listChildrenByRecursive(@RequestParam String relativeUrl, @RequestParam boolean recursive) {
-        String fullPath = String.format("igeocloud://%s", getDiskName(), relativeUrl);
+        String fullPath = String.format("igeocloud://%s%s", getDiskName(), relativeUrl);
         return netDiskService.listChildren(fullPath, recursive);
     }
 
@@ -146,7 +147,7 @@ public class MyDiskRestfull extends AbstractIGeocloudRestfull implements IMyDisk
             @ApiResponse(responseCode = "1002", description = "null_parameter"),
     })
     public void upload(@RequestPart MultipartFile file, @RequestParam String relativeUrl) {
-        String fullPath = String.format("igeocloud://%s", getDiskName(), relativeUrl);
+        String fullPath = String.format("igeocloud://%s%s", getDiskName(), relativeUrl);
         netDiskService.writeFile(file, fullPath);
     }
 
@@ -158,7 +159,7 @@ public class MyDiskRestfull extends AbstractIGeocloudRestfull implements IMyDisk
             @ApiResponse(responseCode = "1002", description = "null_parameter"),
     })
     public void download(@RequestParam String relativeUrl, HttpServletResponse response) throws GeochatException {
-        String fullPath = String.format("igeocloud://%s", getDiskName(), relativeUrl);
+        String fullPath = String.format("igeocloud://%s%s", getDiskName(), relativeUrl);
         FilePath filePath = FilePath.parse(fullPath);
         InputStream inputStream = netDiskService.readFile(filePath);
         doWrite(filePath, inputStream, response);
@@ -172,7 +173,7 @@ public class MyDiskRestfull extends AbstractIGeocloudRestfull implements IMyDisk
             @ApiResponse(responseCode = "1002", description = "null_parameter"),
     })
     public void seekDownload(@RequestParam String relativeUrl, @RequestParam long offset, @RequestParam long length, HttpServletResponse response) throws GeochatException {
-        String fullPath = String.format("igeocloud://%s", getDiskName(), relativeUrl);
+        String fullPath = String.format("igeocloud://%s%s", getDiskName(), relativeUrl);
         FilePath filePath = FilePath.parse(fullPath);
         InputStream inputStream = netDiskService.readFile(filePath, offset, length);
         doWrite(filePath, inputStream, response);
@@ -200,7 +201,7 @@ public class MyDiskRestfull extends AbstractIGeocloudRestfull implements IMyDisk
     })
     @ApiResult
     public void delete(@RequestParam String relativeUrl) {
-        String fullPath = String.format("igeocloud://%s", getDiskName(), relativeUrl);
+        String fullPath = String.format("igeocloud://%s%s", getDiskName(), relativeUrl);
         netDiskService.delete(fullPath);
     }
 
@@ -213,7 +214,7 @@ public class MyDiskRestfull extends AbstractIGeocloudRestfull implements IMyDisk
     })
     @ApiResult
     public void empty(@RequestParam String relativeUrl) {
-        String fullPath = String.format("igeocloud://%s", getDiskName(), relativeUrl);
+        String fullPath = String.format("igeocloud://%s%s", getDiskName(), relativeUrl);
         netDiskService.empty(fullPath);
     }
 
@@ -228,8 +229,8 @@ public class MyDiskRestfull extends AbstractIGeocloudRestfull implements IMyDisk
     public String accessUrl(@RequestParam String relativeUrl, HttpServletRequest request) {
         String fullPath = String.format("igeocloud://%s%s", getDiskName(), relativeUrl);
         FilePath filePath = FilePath.parse(fullPath);
-        return String.format("/api/v1/igeocloud/%s-%s-+-%s",
-                filePath.getBucketName(), filePath.getRelativePath(), filePath.getFilename());
+        return String.format("/api/v1/igeocloud/%s%s-+-%s",
+                filePath.getBucketName(), filePath.getRelativePathWithoutFile().replace("/", "-"), filePath.getFilename());
     }
 
     @Override
@@ -241,7 +242,7 @@ public class MyDiskRestfull extends AbstractIGeocloudRestfull implements IMyDisk
     })
     @ApiResult
     public boolean exists(@RequestParam String relativeUrl) {
-        String fullPath = String.format("igeocloud://%s", getDiskName(), relativeUrl);
+        String fullPath = String.format("igeocloud://%s%s", getDiskName(), relativeUrl);
         return netDiskService.exists(fullPath);
     }
 }
