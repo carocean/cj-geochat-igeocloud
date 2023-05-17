@@ -1,22 +1,25 @@
-package cj.geochat.middle.igeocloud.web.rest;
+package cj.geochat.app.igeocloud.web.rest;
 
 import cj.geochat.ability.api.annotation.ApiResult;
 import cj.geochat.ability.api.exception.ApiException;
 import cj.geochat.ability.minio.INetDiskService;
+import cj.geochat.ability.oauth2.app.DefaultAppAuthentication;
 import cj.geochat.ability.util.GeochatException;
-import cj.geochat.middle.igeocloud.rest.INetDiskRestfull;
+import cj.geochat.app.igeocloud.AbstractIGeocloudRestfull;
+import cj.geochat.app.igeocloud.restfull.IMyDiskRestfull;
 import cj.geochat.util.minio.FilePath;
-import cj.geochat.util.minio.MinioQuotaUnit;
 import io.minio.StatObjectResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,66 +32,44 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/igeocloud")
-@Api(tags = {"云盘管理"})
+@RequestMapping("/api/v1/igeocloud/mine")
+@Api(tags = {"我的云盘"})
 @RefreshScope
 @Slf4j
-public class NetDiskRestfull implements INetDiskRestfull {
+public class MyDiskRestfull extends AbstractIGeocloudRestfull implements IMyDiskRestfull {
     @Autowired
     INetDiskService netDiskService;
 
+    private String getDiskName() {
+        DefaultAppAuthentication authentication = (DefaultAppAuthentication) SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        return username;
+    }
+
     @GetMapping("/createDisk")
-    @ApiOperation("创建云盘")
+    @ApiOperation("创建磁盘。只有在不存在时创建")
     @ApiResult
     @ApiResponses({
             @ApiResponse(responseCode = "2000", description = "ok"),
             @ApiResponse(responseCode = "1002", description = "null_parameter"),
     })
     @Override
-    public void createDisk(String diskName, @ApiParam(value = "云盘大小，如果<=0表示不受限制") long size, @ApiParam(value = "菜用的单位，默认为M", required = false) MinioQuotaUnit unit) {
-        if (unit == null) {
-            unit = MinioQuotaUnit.MB;
-        }
-        netDiskService.createDisk(diskName, size, unit);
+    public void createDisk() {
+        String diskName = getDiskName();
+        checkDisk(netDiskService, String.format("igeocloud://%s", diskName));
     }
-
-    @GetMapping("/setDiskQuota")
-    @ApiOperation("设置云盘配额")
+    @GetMapping("/deleteDisk")
+    @ApiOperation("删除磁盘，需igeocloud管理员权限")
     @ApiResult
     @ApiResponses({
             @ApiResponse(responseCode = "2000", description = "ok"),
             @ApiResponse(responseCode = "1002", description = "null_parameter"),
     })
+    @PreAuthorize("hasAuthority('igeocloud:admin')")
     @Override
-    public void setDiskQuota(String diskName, long size, MinioQuotaUnit unit) {
-        if (unit == null) {
-            unit = MinioQuotaUnit.MB;
-        }
-        netDiskService.setDiskQuota(diskName, size, unit);
-    }
-
-    @GetMapping("/clearDiskQuota")
-    @ApiOperation("清除云盘配额")
-    @ApiResult
-    @ApiResponses({
-            @ApiResponse(responseCode = "2000", description = "ok"),
-            @ApiResponse(responseCode = "1002", description = "null_parameter"),
-    })
-    @Override
-    public void clearDiskQuota(String diskName) {
-        netDiskService.clearDiskQuota(diskName);
-    }
-
-    @GetMapping("/queryDiskPolicy")
-    @ApiOperation("查看云盘策略")
-    @ApiResult
-    @ApiResponses({
-            @ApiResponse(responseCode = "2000", description = "ok"),
-            @ApiResponse(responseCode = "1002", description = "null_parameter"),
-    })
-    @Override
-    public String queryDiskPolicy(String diskName) {
-        return netDiskService.queryDiskPolicy(diskName);
+    public void deleteDisk() {
+        String diskName = getDiskName();
+        netDiskService.delete(String.format("igeocloud://%s", diskName));
     }
 
     @GetMapping("/getDiskQuota")
@@ -99,8 +80,8 @@ public class NetDiskRestfull implements INetDiskRestfull {
             @ApiResponse(responseCode = "1002", description = "null_parameter"),
     })
     @Override
-    public long getDiskQuota(String diskName) {
-        return netDiskService.getDiskQuota(diskName);
+    public long getDiskQuota() {
+        return netDiskService.getDiskQuota(getDiskName());
     }
 
     @GetMapping("/getDataUsageInfo")
@@ -115,6 +96,7 @@ public class NetDiskRestfull implements INetDiskRestfull {
         return netDiskService.getDataUsageInfo();
     }
 
+
     @Override
     @GetMapping("/mkdir")
     @ApiOperation("创建目录")
@@ -123,9 +105,11 @@ public class NetDiskRestfull implements INetDiskRestfull {
             @ApiResponse(responseCode = "2000", description = "ok"),
             @ApiResponse(responseCode = "1002", description = "null_parameter"),
     })
-    public void mkdir(@RequestParam String path) {
-        netDiskService.mkdir(path);
+    public void mkdir(@RequestParam String relativeUrl) {
+        String fullPath = String.format("igeocloud://%s", getDiskName(), relativeUrl);
+        netDiskService.mkdir(fullPath);
     }
+
 
     @Override
     @GetMapping("/listChildren")
@@ -135,8 +119,9 @@ public class NetDiskRestfull implements INetDiskRestfull {
             @ApiResponse(responseCode = "2000", description = "ok"),
             @ApiResponse(responseCode = "1002", description = "null_parameter"),
     })
-    public List<String> listChildren(@RequestParam String path) {
-        return netDiskService.listChildren(path, false);
+    public List<String> listChildren(@RequestParam String relativeUrl) {
+        String fullPath = String.format("igeocloud://%s", getDiskName(), relativeUrl);
+        return netDiskService.listChildren(fullPath, false);
     }
 
     @Override
@@ -147,8 +132,9 @@ public class NetDiskRestfull implements INetDiskRestfull {
             @ApiResponse(responseCode = "2000", description = "ok"),
             @ApiResponse(responseCode = "1002", description = "null_parameter"),
     })
-    public List<String> listChildrenByRecursive(@RequestParam String path, @RequestParam boolean recursive) {
-        return netDiskService.listChildren(path, recursive);
+    public List<String> listChildrenByRecursive(@RequestParam String relativeUrl, @RequestParam boolean recursive) {
+        String fullPath = String.format("igeocloud://%s", getDiskName(), relativeUrl);
+        return netDiskService.listChildren(fullPath, recursive);
     }
 
     @Override
@@ -159,43 +145,9 @@ public class NetDiskRestfull implements INetDiskRestfull {
             @ApiResponse(responseCode = "2000", description = "ok"),
             @ApiResponse(responseCode = "1002", description = "null_parameter"),
     })
-    public void upload(@RequestPart MultipartFile file, @RequestParam String path) {
-        netDiskService.writeFile(file, path);
-    }
-
-    @GetMapping("/{file}")
-    @ApiOperation("请求文件")
-    @ApiResult
-    //浏览器请求文件
-    @Override
-    public void igeocloud(@PathVariable("file") String file, HttpServletRequest request, HttpServletResponse response) throws GeochatException, IOException {
-        if (!StringUtils.hasText(file)) {
-            throw new ApiException("404", "Missing file parameter. ");
-        }
-        if (file.indexOf("-") < 1) {
-            throw new ApiException("500", "The request address format is incorrect. ");
-        }
-        int dirEndPos = file.indexOf("-+-");
-        if (dirEndPos <= 0) {
-            throw new ApiException("500", "The request address format is incorrect, No terminator.");
-        }
-        String dir = file.substring(0, dirEndPos);
-        String fn = file.substring(dirEndPos + "-+-".length());
-        file = "igeocloud://" + dir.replace("-", "/") + "/" + fn;
-        InputStream inputStream = netDiskService.readFile(file);
-        StatObjectResponse objectResponse = netDiskService.getFileInfo(FilePath.parse(file));
-        if (StringUtils.hasText(request.getContentType())) {
-            response.setContentType(request.getContentType());
-        } else {
-            response.setContentType(objectResponse.contentType());
-        }
-//        response.setContentLength((int) objectResponse.size());
-        byte[] buf = new byte[1024 * 512];//每次0.5m
-        int readLen = 0;
-        while ((readLen = inputStream.read(buf, 0, buf.length)) > -1) {
-            response.getOutputStream().write(buf, 0, readLen);
-            response.getOutputStream().flush();
-        }
+    public void upload(@RequestPart MultipartFile file, @RequestParam String relativeUrl) {
+        String fullPath = String.format("igeocloud://%s", getDiskName(), relativeUrl);
+        netDiskService.writeFile(file, fullPath);
     }
 
     @Override
@@ -205,8 +157,9 @@ public class NetDiskRestfull implements INetDiskRestfull {
             @ApiResponse(responseCode = "2000", description = "ok"),
             @ApiResponse(responseCode = "1002", description = "null_parameter"),
     })
-    public void download(@RequestParam String path, HttpServletResponse response) throws GeochatException {
-        FilePath filePath = FilePath.parse(path);
+    public void download(@RequestParam String relativeUrl, HttpServletResponse response) throws GeochatException {
+        String fullPath = String.format("igeocloud://%s", getDiskName(), relativeUrl);
+        FilePath filePath = FilePath.parse(fullPath);
         InputStream inputStream = netDiskService.readFile(filePath);
         doWrite(filePath, inputStream, response);
     }
@@ -218,8 +171,9 @@ public class NetDiskRestfull implements INetDiskRestfull {
             @ApiResponse(responseCode = "2000", description = "ok"),
             @ApiResponse(responseCode = "1002", description = "null_parameter"),
     })
-    public void seekDownload(@RequestParam String path, @RequestParam long offset, @RequestParam long length, HttpServletResponse response) throws GeochatException {
-        FilePath filePath = FilePath.parse(path);
+    public void seekDownload(@RequestParam String relativeUrl, @RequestParam long offset, @RequestParam long length, HttpServletResponse response) throws GeochatException {
+        String fullPath = String.format("igeocloud://%s", getDiskName(), relativeUrl);
+        FilePath filePath = FilePath.parse(fullPath);
         InputStream inputStream = netDiskService.readFile(filePath, offset, length);
         doWrite(filePath, inputStream, response);
     }
@@ -245,8 +199,9 @@ public class NetDiskRestfull implements INetDiskRestfull {
             @ApiResponse(responseCode = "1002", description = "null_parameter"),
     })
     @ApiResult
-    public void delete(@RequestParam String path) {
-        netDiskService.delete(path);
+    public void delete(@RequestParam String relativeUrl) {
+        String fullPath = String.format("igeocloud://%s", getDiskName(), relativeUrl);
+        netDiskService.delete(fullPath);
     }
 
     @Override
@@ -257,8 +212,9 @@ public class NetDiskRestfull implements INetDiskRestfull {
             @ApiResponse(responseCode = "1002", description = "null_parameter"),
     })
     @ApiResult
-    public void empty(@RequestParam String path) {
-        netDiskService.empty(path);
+    public void empty(@RequestParam String relativeUrl) {
+        String fullPath = String.format("igeocloud://%s", getDiskName(), relativeUrl);
+        netDiskService.empty(fullPath);
     }
 
     @Override
@@ -269,10 +225,11 @@ public class NetDiskRestfull implements INetDiskRestfull {
             @ApiResponse(responseCode = "1002", description = "null_parameter"),
     })
     @ApiResult
-    public String accessUrl(@RequestParam String path, HttpServletRequest request) {
-        FilePath filePath = FilePath.parse(path);
-        return String.format("%s/%s-%s-+-%s",
-                request.getRequestURI(), filePath.getBucketName(), filePath.getRelativePath(), filePath.getFilename());
+    public String accessUrl(@RequestParam String relativeUrl, HttpServletRequest request) {
+        String fullPath = String.format("igeocloud://%s%s", getDiskName(), relativeUrl);
+        FilePath filePath = FilePath.parse(fullPath);
+        return String.format("/api/v1/igeocloud/%s-%s-+-%s",
+                filePath.getBucketName(), filePath.getRelativePath(), filePath.getFilename());
     }
 
     @Override
@@ -283,7 +240,8 @@ public class NetDiskRestfull implements INetDiskRestfull {
             @ApiResponse(responseCode = "1002", description = "null_parameter"),
     })
     @ApiResult
-    public boolean exists(@RequestParam String path) {
-        return netDiskService.exists(path);
+    public boolean exists(@RequestParam String relativeUrl) {
+        String fullPath = String.format("igeocloud://%s", getDiskName(), relativeUrl);
+        return netDiskService.exists(fullPath);
     }
 }

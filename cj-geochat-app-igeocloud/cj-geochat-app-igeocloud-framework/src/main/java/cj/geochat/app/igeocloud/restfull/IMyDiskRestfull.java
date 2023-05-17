@@ -1,24 +1,18 @@
-package cj.geochat.middle.igeocloud.rest;
+package cj.geochat.app.igeocloud.restfull;
 
 import cj.geochat.ability.util.GeochatException;
-import cj.geochat.util.minio.MinioQuotaUnit;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-public interface INetDiskRestfull {
-    public void createDisk(String diskName, long size, MinioQuotaUnit unit);
-    void setDiskQuota(String diskName, long size, MinioQuotaUnit unit);
-    void clearDiskQuota(String diskName);
+public interface IMyDiskRestfull {
 
-    public String queryDiskPolicy(String diskName);
-
-    public long getDiskQuota(String diskName);
+    void createDisk();
+    void deleteDisk();
+    public long getDiskQuota();
 
     public Map<String, Object> getDataUsageInfo();
 
@@ -30,9 +24,6 @@ public interface INetDiskRestfull {
 
     void upload(MultipartFile file, String path);
 
-    //浏览器请求文件
-    void igeocloud(String file, HttpServletRequest request, HttpServletResponse response) throws GeochatException, IOException;
-
     void download(String path, HttpServletResponse response) throws GeochatException;
 
     void seekDownload(String path, long offset, long length, HttpServletResponse response) throws GeochatException;
@@ -41,7 +32,7 @@ public interface INetDiskRestfull {
 
     void empty(String path);
 
-    String accessUrl(@RequestParam String path, HttpServletRequest request);
+    String accessUrl(String path, HttpServletRequest request);
 
     boolean exists(String path);
 }
