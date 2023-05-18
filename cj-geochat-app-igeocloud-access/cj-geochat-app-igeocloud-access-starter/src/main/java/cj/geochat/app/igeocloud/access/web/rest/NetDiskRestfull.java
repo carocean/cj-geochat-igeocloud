@@ -82,11 +82,10 @@ public class NetDiskRestfull implements INetDiskRestfull {
             throw new GeochatRuntimeException("500", "Incorrect address format");
         }
         String diskname = file.substring(0, pos);
-        if (diskname == "public") {
+        if ("public".equals(diskname)) {
             return;
         }
-        if (diskname == "system") {
-
+        if ("system".equals(diskname)) {
             return;
         }
         DefaultAppAuthentication authentication = (DefaultAppAuthentication) SecurityContextHolder.getContext().getAuthentication();
