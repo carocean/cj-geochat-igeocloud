@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
-    <file url="file://$PROJECT_DIR$/cj-geochat-app-igeocloud/cj-geochat-app-igeocloud-framework/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cj-geochat-app-igeocloud/cj-geochat-app-igeocloud-framework/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cj-geochat-app-igeocloud/cj-geochat-app-igeocloud-remote/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cj-geochat-app-igeocloud/cj-geochat-app-igeocloud-remote/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cj-geochat-app-igeocloud/cj-geochat-app-igeocloud-starter/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cj-geochat-app-igeocloud/cj-geochat-app-igeocloud-starter/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cj-geochat-app-igeocloud/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cj-geochat-app-igeocloud/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cj-geochat-app-igeocloud-access/cj-geochat-app-igeocloud-access-framework/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cj-geochat-app-igeocloud-access/cj-geochat-app-igeocloud-access-framework/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cj-geochat-app-igeocloud-access/cj-geochat-app-igeocloud-access-remote/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cj-geochat-app-igeocloud-access/cj-geochat-app-igeocloud-access-remote/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cj-geochat-app-igeocloud-access/cj-geochat-app-igeocloud-access-starter/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cj-geochat-app-igeocloud-access/cj-geochat-app-igeocloud-access-starter/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cj-geochat-app-igeocloud-access/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cj-geochat-app-igeocloud-access/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cj-geochat-app-igeocloud-disk/cj-geochat-app-igeocloud-disk-framework/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cj-geochat-app-igeocloud-disk/cj-geochat-app-igeocloud-disk-framework/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cj-geochat-app-igeocloud-disk/cj-geochat-app-igeocloud-disk-remote/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cj-geochat-app-igeocloud-disk/cj-geochat-app-igeocloud-disk-remote/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cj-geochat-app-igeocloud-disk/cj-geochat-app-igeocloud-disk-starter/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cj-geochat-app-igeocloud-disk/cj-geochat-app-igeocloud-disk-starter/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cj-geochat-app-igeocloud-disk/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cj-geochat-app-igeocloud-disk/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cj-geochat-igeocloud-framework/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cj-geochat-igeocloud-framework/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cj-geochat-igeocloud-remote/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cj-geochat-igeocloud-remote/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cj-geochat-igeocloud-starter/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cj-geochat-igeocloud-starter/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cj-geochat-middle-igeocloud/cj-geochat-middle-igeocloud-framework/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cj-geochat-middle-igeocloud/cj-geochat-middle-igeocloud-framework/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cj-geochat-middle-igeocloud/cj-geochat-middle-igeocloud-remote/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cj-geochat-middle-igeocloud/cj-geochat-middle-igeocloud-remote/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cj-geochat-middle-igeocloud/cj-geochat-middle-igeocloud-starter/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cj-geochat-middle-igeocloud/cj-geochat-middle-igeocloud-starter/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cj-geochat-middle-igeocloud/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cj-geochat-middle-igeocloud/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cj-geochat-open-igeocloud/cj-geochat-open-igeocloud-framework/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cj-geochat-open-igeocloud/cj-geochat-open-igeocloud-framework/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/cj-geochat-open-igeocloud/cj-geochat-open-igeocloud-remote/src/main/java" charset="UTF-8" />

@@ -16,8 +16,8 @@
     <packaging>pom</packaging>
     <modules>
         <module>cj-geochat-open-igeocloud</module>
-        <module>cj-geochat-middle-igeocloud</module>
-        <module>cj-geochat-app-igeocloud</module>
+        <module>cj-geochat-app-igeocloud-access</module>
+        <module>cj-geochat-app-igeocloud-disk</module>
     </modules>
 
     <properties>

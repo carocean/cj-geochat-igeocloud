@@ -3,7 +3,8 @@ spring:
     #认证服务中心（不是认证服务中心地址）
     auth_server: ${cj.geochat.security_auth_server_host:http://localhost:9000}
     whitelist:
-      - /cj-geochat-middle-igeocloud/**
+      - /cj-geochat-app-igeocloud-access/api/v1/igeocloud/public/**
+      - /cj-geochat-app-igeocloud-access/api/v1/igeocloud/*-public-**
       - /*/wagger-ui.html**
       - /*/doc.html**
     staticlist:

@@ -17,18 +17,18 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: cj-geochat-middle-igeocloud
-          uri: lb://cj-geochat-middle-igeocloud
+        - id: cj-geochat-app-igeocloud-access
+          uri: lb://cj-geochat-app-igeocloud-access
           predicates:
-            - Path=/cj-geochat-middle-igeocloud/api/v1/igeocloud/**
+            - Path=/cj-geochat-app-igeocloud-access/api/v1/igeocloud/**
 #            - Weight=group1, 5
           filters:
             # StripPrefix：去除原始请求路径中的前1级路径，即去掉微服务注册名：/cj-geochat-middle-igeocloud
             - StripPrefix=1
-        - id: cj-geochat-app-igeocloud
-          uri: lb://cj-geochat-app-igeocloud
+        - id: cj-geochat-app-igeocloud-disk
+          uri: lb://cj-geochat-app-igeocloud-disk
           predicates:
-            - Path=/cj-geochat-app-igeocloud/**  #多个路径用逗号分隔
+            - Path=/cj-geochat-app-igeocloud-disk/**  #多个路径用逗号分隔
 #            - Weight=group1, 5
           filters:
             - SwaggerHeaderFilter
