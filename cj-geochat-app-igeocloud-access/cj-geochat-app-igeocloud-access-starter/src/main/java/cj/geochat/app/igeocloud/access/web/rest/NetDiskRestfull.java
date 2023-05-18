@@ -4,7 +4,10 @@ import cj.geochat.ability.api.annotation.ApiResult;
 import cj.geochat.ability.api.exception.ApiException;
 import cj.geochat.ability.minio.INetDiskService;
 import cj.geochat.ability.oauth2.app.DefaultAppAuthentication;
+import cj.geochat.ability.oauth2.app.DefaultAppPrincipal;
+import cj.geochat.ability.oauth2.userdetails.GeochatUser;
 import cj.geochat.ability.util.GeochatException;
+import cj.geochat.ability.util.GeochatRuntimeException;
 import cj.geochat.app.igeocloud.access.rest.INetDiskRestfull;
 import cj.geochat.util.minio.FilePath;
 import io.minio.StatObjectResponse;
@@ -72,8 +75,45 @@ public class NetDiskRestfull implements INetDiskRestfull {
         }
     }
 
+    //file=18023457655-pictures-+-d2af59aa6bf606a239b89f13fd9aff13.jpg
     private void checkRights(String file) {
+        int pos = file.indexOf("-");
+        if (pos < 0) {
+            throw new GeochatRuntimeException("500", "Incorrect address format");
+        }
+        String diskname = file.substring(0, pos);
+        if (diskname == "public") {
+            return;
+        }
+        if (diskname == "system") {
+
+            return;
+        }
         DefaultAppAuthentication authentication = (DefaultAppAuthentication) SecurityContextHolder.getContext().getAuthentication();
+        DefaultAppPrincipal principal = (DefaultAppPrincipal) authentication.getPrincipal();
+        //下面是用户
+        String remaing = file.substring(pos + 1);
+        if (remaing.startsWith("+-")) {
+            //说明是文件在根目录，只充许用户自己查看
+            if (diskname.equals(principal.getUserid())) {
+                return;
+            }
+            throw new GeochatRuntimeException("801", "Refuse viewing.");
+        }
+        pos = remaing.indexOf("-");
+        if (pos < 0) {
+            throw new GeochatRuntimeException("500", "Incorrect address format");
+        }
+        String firstDir = remaing.substring(0, pos);
+        //用户的公共目录任何人都可查看
+        if ("public".equals(firstDir)) {
+            return;
+        }
+        //其它目录则只充许自己查看
+        if (diskname.equals(principal.getUserid())) {
+            return;
+        }
+        throw new GeochatRuntimeException("801", "Refuse viewing.");
     }
 
 }

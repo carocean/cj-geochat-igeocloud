@@ -3,6 +3,8 @@ package cj.geochat.app.igeocloud.disk.web.rest;
 import cj.geochat.ability.api.annotation.ApiResult;
 import cj.geochat.ability.minio.INetDiskService;
 import cj.geochat.ability.oauth2.app.DefaultAppAuthentication;
+import cj.geochat.ability.oauth2.app.DefaultAppPrincipal;
+import cj.geochat.ability.oauth2.userdetails.GeochatUser;
 import cj.geochat.ability.util.GeochatException;
 import cj.geochat.app.igeocloud.disk.rest.IMyDiskRestfull;
 import cj.geochat.app.igeocloud.disk.web.AbstractIGeocloudRestfull;
@@ -38,8 +40,8 @@ public class MyDiskRestfull extends AbstractIGeocloudRestfull implements IMyDisk
 
     private String getDiskName() {
         DefaultAppAuthentication authentication = (DefaultAppAuthentication) SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        return username;
+        DefaultAppPrincipal principal = (DefaultAppPrincipal) authentication.getPrincipal();
+        return principal.getUserid();
     }
 
     @GetMapping("/createDisk")
