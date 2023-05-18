@@ -97,7 +97,7 @@
                     <!--docker宿主机的ip，要为docker开通tcp访问才有效-->
                     <dockerHost>http://geochat-ecs.local:2375</dockerHost>
                     <!--指定生成的镜像名,这里是我们的作者名+项目名+版本号-->
-                    <imageName>geochat/app-igeocloud:${project.version}</imageName>
+                    <imageName>geochat/app-igeocloud-disk:${project.version}</imageName>
                     <!--指定标签 这里指定的是镜像的版本，我们默认版本是latest-->
                     <!--版本最好不要用imageTags，因为imageName中如果没有指定版本，
                     而imageTags中指定的版本不是latest的话，同时会生成多个版本，
@@ -127,6 +127,9 @@
                     <env>
                         <cj.geochat.spring.profiles.active>prod</cj.geochat.spring.profiles.active>
                         <cj.geochat.EUREKA_SERVER_URL>http://geochat-ecs.local:8761/eureka</cj.geochat.EUREKA_SERVER_URL>
+                        <cj.geochat.minio.endpoint>http://minio-nginx-1:9000</cj.geochat.minio.endpoint>
+                        <cj.geochat.minio.accessKey>minioadmin</cj.geochat.minio.accessKey>
+                        <cj.geochat.minio.secretKey>minioadmin</cj.geochat.minio.secretKey>
                     </env>
                     <!--指定远程 docker api地址 远程仓库-->
                     <!--                    <dockerHost>http://localhost:2375</dockerHost>-->
